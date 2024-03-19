@@ -1276,7 +1276,7 @@ func (m *OrderResult) GetItems() []*OrderItem {
 }
 
 type SendOrderConfirmationRequest struct {
-	Email                string       `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	// Email                string       `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	Order                *OrderResult `protobuf:"bytes,2,opt,name=order,proto3" json:"order,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
 	XXX_unrecognized     []byte       `json:"-"`
@@ -1308,12 +1308,12 @@ func (m *SendOrderConfirmationRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_SendOrderConfirmationRequest proto.InternalMessageInfo
 
-func (m *SendOrderConfirmationRequest) GetEmail() string {
-	if m != nil {
-		return m.Email
-	}
-	return ""
-}
+// func (m *SendOrderConfirmationRequest) GetEmail() string {
+// 	if m != nil {
+// 		return m.Email
+// 	}
+// 	return ""
+// }
 
 func (m *SendOrderConfirmationRequest) GetOrder() *OrderResult {
 	if m != nil {
@@ -1326,7 +1326,7 @@ type PlaceOrderRequest struct {
 	UserId               string          `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	UserCurrency         string          `protobuf:"bytes,2,opt,name=user_currency,json=userCurrency,proto3" json:"user_currency,omitempty"`
 	Address              *Address        `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
-	Email                string          `protobuf:"bytes,5,opt,name=email,proto3" json:"email,omitempty"`
+	// Email                string          `protobuf:"bytes,5,opt,name=email,proto3" json:"email,omitempty"`
 	CreditCard           *CreditCardInfo `protobuf:"bytes,6,opt,name=credit_card,json=creditCard,proto3" json:"credit_card,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
@@ -1379,12 +1379,12 @@ func (m *PlaceOrderRequest) GetAddress() *Address {
 	return nil
 }
 
-func (m *PlaceOrderRequest) GetEmail() string {
-	if m != nil {
-		return m.Email
-	}
-	return ""
-}
+// func (m *PlaceOrderRequest) GetEmail() string {
+// 	if m != nil {
+// 		return m.Email
+// 	}
+// 	return ""
+// }
 
 func (m *PlaceOrderRequest) GetCreditCard() *CreditCardInfo {
 	if m != nil {
@@ -2188,66 +2188,66 @@ var _PaymentService_serviceDesc = grpc.ServiceDesc{
 // EmailServiceClient is the client API for EmailService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type EmailServiceClient interface {
-	SendOrderConfirmation(ctx context.Context, in *SendOrderConfirmationRequest, opts ...grpc.CallOption) (*Empty, error)
-}
+// type EmailServiceClient interface {
+// 	SendOrderConfirmation(ctx context.Context, in *SendOrderConfirmationRequest, opts ...grpc.CallOption) (*Empty, error)
+// }
 
-type emailServiceClient struct {
-	cc *grpc.ClientConn
-}
+// type emailServiceClient struct {
+// 	cc *grpc.ClientConn
+// }
 
-func NewEmailServiceClient(cc *grpc.ClientConn) EmailServiceClient {
-	return &emailServiceClient{cc}
-}
+// func NewEmailServiceClient(cc *grpc.ClientConn) EmailServiceClient {
+// 	return &emailServiceClient{cc}
+// }
 
-func (c *emailServiceClient) SendOrderConfirmation(ctx context.Context, in *SendOrderConfirmationRequest, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/hipstershop.EmailService/SendOrderConfirmation", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
+// func (c *emailServiceClient) SendOrderConfirmation(ctx context.Context, in *SendOrderConfirmationRequest, opts ...grpc.CallOption) (*Empty, error) {
+// 	out := new(Empty)
+// 	err := c.cc.Invoke(ctx, "/hipstershop.EmailService/SendOrderConfirmation", in, out, opts...)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return out, nil
+// }
 
-// EmailServiceServer is the server API for EmailService service.
-type EmailServiceServer interface {
-	SendOrderConfirmation(context.Context, *SendOrderConfirmationRequest) (*Empty, error)
-}
+// // EmailServiceServer is the server API for EmailService service.
+// type EmailServiceServer interface {
+// 	SendOrderConfirmation(context.Context, *SendOrderConfirmationRequest) (*Empty, error)
+// }
 
-func RegisterEmailServiceServer(s *grpc.Server, srv EmailServiceServer) {
-	s.RegisterService(&_EmailService_serviceDesc, srv)
-}
+// func RegisterEmailServiceServer(s *grpc.Server, srv EmailServiceServer) {
+// 	s.RegisterService(&_EmailService_serviceDesc, srv)
+// }
 
-func _EmailService_SendOrderConfirmation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendOrderConfirmationRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(EmailServiceServer).SendOrderConfirmation(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hipstershop.EmailService/SendOrderConfirmation",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EmailServiceServer).SendOrderConfirmation(ctx, req.(*SendOrderConfirmationRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
+// func _EmailService_SendOrderConfirmation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+// 	in := new(SendOrderConfirmationRequest)
+// 	if err := dec(in); err != nil {
+// 		return nil, err
+// 	}
+// 	if interceptor == nil {
+// 		return srv.(EmailServiceServer).SendOrderConfirmation(ctx, in)
+// 	}
+// 	info := &grpc.UnaryServerInfo{
+// 		Server:     srv,
+// 		FullMethod: "/hipstershop.EmailService/SendOrderConfirmation",
+// 	}
+// 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+// 		return srv.(EmailServiceServer).SendOrderConfirmation(ctx, req.(*SendOrderConfirmationRequest))
+// 	}
+// 	return interceptor(ctx, in, info, handler)
+// }
 
-var _EmailService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "hipstershop.EmailService",
-	HandlerType: (*EmailServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "SendOrderConfirmation",
-			Handler:    _EmailService_SendOrderConfirmation_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "demo.proto",
-}
+// var _EmailService_serviceDesc = grpc.ServiceDesc{
+// 	ServiceName: "hipstershop.EmailService",
+// 	HandlerType: (*EmailServiceServer)(nil),
+// 	Methods: []grpc.MethodDesc{
+// 		{
+// 			MethodName: "SendOrderConfirmation",
+// 			Handler:    _EmailService_SendOrderConfirmation_Handler,
+// 		},
+// 	},
+// 	Streams:  []grpc.StreamDesc{},
+// 	Metadata: "demo.proto",
+// }
 
 // CheckoutServiceClient is the client API for CheckoutService service.
 //
