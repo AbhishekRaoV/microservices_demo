@@ -224,57 +224,60 @@ func (cs *checkoutService) Watch(req *healthpb.HealthCheckRequest, ws healthpb.H
 	return status.Errorf(codes.Unimplemented, "health check via Watch not implemented")
 }
 
-func (cs *checkoutService) PlaceOrder(ctx context.Context) (*pb.PlaceOrderResponse, error) {
-	log.Infof("[PlaceOrder] user_id=%q user_currency=%q", req.UserId, req.UserCurrency)
+func (cs *checkoutService) PlaceOrder(ctx context.Context, req *pb.PlaceOrderRequest) (*pb.PlaceOrderResponse, error) {
+    // Log information about the order user and currency
+    log.Infof("[PlaceOrder] user_id=%q user_currency=%q", req.UserId, req.UserCurrency)
 
-	orderID, err := uuid.NewUUID()
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to generate order uuid")
-	}
+    // Generate a new order ID
+    orderID, err := uuid.NewUUID()
+    if err != nil {
+        return nil, status.Errorf(codes.Internal, "failed to generate order uuid")
+    }
 
-	prep, err := cs.prepareOrderItemsAndShippingQuoteFromCart(ctx, req.UserId, req.UserCurrency, req.Address)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
-	}
+    // Prepare order items and shipping quote from the user's cart
+    prep, err := cs.prepareOrderItemsAndShippingQuoteFromCart(ctx, req.UserId, req.UserCurrency, req.Address)
+    if err != nil {
+        return nil, status.Errorf(codes.Internal, err.Error())
+    }
 
-	total := pb.Money{CurrencyCode: req.UserCurrency,
-		Units: 0,
-		Nanos: 0}
-	total = money.Must(money.Sum(total, *prep.shippingCostLocalized))
-	for _, it := range prep.orderItems {
-		multPrice := money.MultiplySlow(*it.Cost, uint32(it.GetItem().GetQuantity()))
-		total = money.Must(money.Sum(total, multPrice))
-	}
+    // Calculate the total cost of the order
+    total := pb.Money{CurrencyCode: req.UserCurrency, Units: 0, Nanos: 0}
+    total = money.Must(money.Sum(total, *prep.shippingCostLocalized))
+    for _, it := range prep.orderItems {
+        multPrice := money.MultiplySlow(*it.Cost, uint32(it.GetItem().GetQuantity()))
+        total = money.Must(money.Sum(total, multPrice))
+    }
 
-	txID, err := cs.chargeCard(ctx, &total, req.CreditCard)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to charge card: %+v", err)
-	}
-	log.Infof("payment went through (transaction_id: %s)", txID)
+    // Charge the user's credit card for the total amount
+    txID, err := cs.chargeCard(ctx, &total, req.CreditCard)
+    if err != nil {
+        return nil, status.Errorf(codes.Internal, "failed to charge card: %+v", err)
+    }
+    log.Infof("payment went through (transaction_id: %s)", txID)
 
-	shippingTrackingID, err := cs.shipOrder(ctx, req.Address, prep.cartItems)
-	if err != nil {
-		return nil, status.Errorf(codes.Unavailable, "shipping error: %+v", err)
-	}
+    // Ship the order to the user's address
+    shippingTrackingID, err := cs.shipOrder(ctx, req.Address, prep.cartItems)
+    if err != nil {
+        return nil, status.Errorf(codes.Unavailable, "shipping error: %+v", err)
+    }
 
-	_ = cs.emptyUserCart(ctx, req.UserId)
+    // Empty the user's cart after placing the order
+    _ = cs.emptyUserCart(ctx, req.UserId)
 
-	orderResult := &pb.OrderResult{
-		OrderId:            orderID.String(),
-		ShippingTrackingId: shippingTrackingID,
-		ShippingCost:       prep.shippingCostLocalized,
-		ShippingAddress:    req.Address,
-		Items:              prep.orderItems,
-	}
+    // Create the order result with necessary details
+    orderResult := &pb.OrderResult{
+        OrderId:            orderID.String(),
+        ShippingTrackingId: shippingTrackingID,
+        ShippingCost:       prep.shippingCostLocalized,
+        ShippingAddress:    req.Address,
+        Items:              prep.orderItems,
+    }
 
-	// if err := cs.sendOrderConfirmation(ctx, req.Email, orderResult); err != nil {
-	// 	log.Warnf("failed to send order confirmation to %q: %+v", req.Email, err)
-	// } else {
-	// 	log.Infof("order confirmation email sent to %q", req.Email)
-	// }
-	resp := &pb.PlaceOrderResponse{Order: orderResult}
-	return resp, nil
+    // Return the response with the order result
+    resp := &pb.PlaceOrderResponse{Order: orderResult}
+    return resp, nil
 }
+
 
 type orderPrep struct {
 	orderItems            []*pb.OrderItem
