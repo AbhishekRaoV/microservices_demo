@@ -378,7 +378,7 @@ func (cs *checkoutService) chargeCard(ctx context.Context, amount *pb.Money, pay
 // 		Email: email,
 // 		Order: order})
 // 	return err
-}
+// }
 
 func (cs *checkoutService) shipOrder(ctx context.Context, address *pb.Address, items []*pb.CartItem) (string, error) {
 	resp, err := pb.NewShippingServiceClient(cs.shippingSvcConn).ShipOrder(ctx, &pb.ShipOrderRequest{
