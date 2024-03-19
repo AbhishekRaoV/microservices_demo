@@ -1,3 +1,17 @@
+// Copyright 2018 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -253,6 +267,11 @@ func (cs *checkoutService) PlaceOrder(ctx context.Context, req *pb.PlaceOrderReq
 		Items:              prep.orderItems,
 	}
 
+	// if err := cs.sendOrderConfirmation(ctx, req.Email, orderResult); err != nil {
+	// 	log.Warnf("failed to send order confirmation to %q: %+v", req.Email, err)
+	// } else {
+	// 	log.Infof("order confirmation email sent to %q", req.Email)
+	// }
 	resp := &pb.PlaceOrderResponse{Order: orderResult}
 	return resp, nil
 }
@@ -352,6 +371,13 @@ func (cs *checkoutService) chargeCard(ctx context.Context, amount *pb.Money, pay
 		return "", fmt.Errorf("could not charge the card: %+v", err)
 	}
 	return paymentResp.GetTransactionId(), nil
+}
+
+func (cs *checkoutService) sendOrderConfirmation(ctx context.Context, email string, order *pb.OrderResult) error {
+	_, err := pb.NewEmailServiceClient(cs.emailSvcConn).SendOrderConfirmation(ctx, &pb.SendOrderConfirmationRequest{
+		Email: email,
+		Order: order})
+	return err
 }
 
 func (cs *checkoutService) shipOrder(ctx context.Context, address *pb.Address, items []*pb.CartItem) (string, error) {
